@@ -12,57 +12,56 @@ function Subscription() {
   const plans = [
     {
       id: 'free',
-      name: 'Free',
+      name: 'Gratis',
       price: 0,
-      period: 'Forever',
-      description: 'Perfect for getting started',
+      period: 'Siempre',
+      description: 'Perfecto para empezar',
       features: [
-        'Access to free articles',
-        'Basic newsletter subscription',
-        'Community access',
-        'Mobile app access',
-        'Email support'
+        'Acceso a artículos gratuitos',
+        'Newsletter básico',
+        'Acceso a la comunidad',
+        'Acceso desde móvil',
+        'Soporte por email'
       ],
-      buttonText: 'Get Started Free',
+      buttonText: 'Comenzar Gratis',
       popular: false,
       color: '#6c757d'
     },
     {
-      id: 'premium',
-      name: 'Premium',
+      id: 'subscriber',
+      name: 'Suscriptor',
       price: 9.99,
-      period: 'per month',
-      description: 'Best for regular readers',
+      period: 'por mes',
+      description: 'Ideal para lectores regulares',
       features: [
-        'Everything in Free',
-        'Access to premium articles',
-        'Ad-free reading experience',
-        'Offline reading',
-        'Priority email support',
-        'Weekly exclusive content',
-        'Comment on articles'
+        'Todo lo incluido en Gratis',
+        'Acceso a artículos premium',
+        'Experiencia sin anuncios',
+        'Lectura offline',
+        'Soporte prioritario',
+        'Contenido exclusivo semanal',
+        'Comentar en artículos'
       ],
-      buttonText: 'Start Premium',
+      buttonText: 'Ser Suscriptor',
       popular: true,
       color: '#ffd700'
     },
     {
-      id: 'pro',
-      name: 'Pro',
+      id: 'author',
+      name: 'Autor',
       price: 19.99,
-      period: 'per month',
-      description: 'For professionals and enthusiasts',
+      period: 'por mes',
+      description: 'Para escritores y creadores',
       features: [
-        'Everything in Premium',
-        'Access to all pro content',
-        'Early access to new articles',
-        'Monthly video calls with authors',
-        'Custom reading lists',
-        'Advanced analytics',
-        'Priority customer support',
-        'Exclusive pro community'
+        'Todo lo incluido en Suscriptor',
+        'Publicar artículos propios',
+        'Panel de control de autor',
+        'Estadísticas de artículos',
+        'Interacción directa con lectores',
+        'Webinars mensuales exclusivos',
+        'Herramientas de escritura avanzadas'
       ],
-      buttonText: 'Go Pro',
+      buttonText: 'Convertirse en Autor',
       popular: false,
       color: '#4CAF50'
     }
@@ -83,7 +82,7 @@ function Subscription() {
           navigate('/register', { 
             state: { 
               selectedPlan: 'free',
-              message: 'Create your free account to get started' 
+              message: 'Crea tu cuenta gratuita para comenzar' 
             } 
           });
         }
@@ -127,10 +126,10 @@ function Subscription() {
                 <h3 className="plan-name">{plan.name}</h3>
                 <div className="plan-price">
                   <span className="price-amount">
-                    {plan.price === 0 ? 'Free' : `$${plan.price}`}
+                    {plan.price === 0 ? 'Gratis' : `$${plan.price}`}
                   </span>
                   {plan.price > 0 && (
-                    <span className="price-period">/{plan.period.split(' ')[1]}</span>
+                    <span className="price-period">/{plan.period.split(' ')[1] || plan.period}</span>
                   )}
                 </div>
                 <p className="plan-description">{plan.description}</p>

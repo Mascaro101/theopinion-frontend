@@ -145,14 +145,14 @@ function Login() {
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <div className="password-input-container">
-              <input
+            <input
                 type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="Enter your password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              placeholder="Enter your password"
                 className={`form-input ${errors.password ? 'error' : ''}`}
                 disabled={isLoading}
               />

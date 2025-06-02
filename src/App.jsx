@@ -6,6 +6,7 @@ import Login from "./Login/Login.jsx";
 import Register from "./Register/Register.jsx";
 import Subscription from "./Subscription/Subscription.jsx";
 import Payment from "./Payment/Payment.jsx";
+import Settings from "./Settings/Settings.jsx";
 import "./App.css";
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/subscription" element={<Subscription />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings/:tab" element={<Settings />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </div>

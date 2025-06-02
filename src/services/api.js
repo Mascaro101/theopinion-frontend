@@ -48,15 +48,23 @@ export const authService = {
   login: async (email, password) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data.data;
       
-      // Guardar token y usuario en localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      return response.data;
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+        
+        // Guardar token y usuario en localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        return response.data;
+      } else {
+        throw new Error(response.data.message || 'Error al iniciar sesión');
+      }
     } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
+      if (error.response?.data) {
+        throw new Error(error.response.data.message || 'Error al iniciar sesión');
+      }
+      throw new Error(error.message || 'Error de conexión');
     }
   },
 
@@ -64,20 +72,39 @@ export const authService = {
   register: async (userData) => {
     try {
       const response = await api.post('/auth/register', userData);
-      const { token, user } = response.data.data;
       
-      // Guardar token y usuario en localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      return response.data;
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+        
+        // Guardar token y usuario en localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        return response.data;
+      } else {
+        throw new Error(response.data.message || 'Error al registrarse');
+      }
     } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
+      if (error.response?.data) {
+        throw new Error(error.response.data.message || 'Error al registrarse');
+      }
+      throw new Error(error.message || 'Error de conexión');
     }
   },
 
   // Logout
-  logout: () => {
+  logout: async () => {
+    try {
+      // Intentar hacer logout en el backend
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error('Backend logout error:', error);
+      // No lanzar error aquí, ya que queremos limpiar el estado local de todos modos
+    }
+  },
+
+  // Limpiar autenticación local
+  clearLocalAuth: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   },

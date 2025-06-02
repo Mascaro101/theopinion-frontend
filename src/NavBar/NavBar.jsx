@@ -72,7 +72,7 @@ function NavBar() {
                   <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     Mi Perfil
                   </Link>
-                  <Link to="/settings" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
+                  <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     Configuración
                   </Link>
                   {user?.role === 'admin' && (

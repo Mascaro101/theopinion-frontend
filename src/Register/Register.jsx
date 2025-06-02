@@ -19,7 +19,8 @@ function Register() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selectedPlan = location.state?.selectedPlan;
+  const paymentData = location.state?.paymentData;
+  const subscriptionInfo = location.state?.subscriptionInfo;
   const message = location.state?.message;
 
   // Redirigir si ya está autenticado
@@ -28,6 +29,18 @@ function Register() {
       navigate("/");
     }
   }, [isAuthenticated, navigate]);
+
+  // Prellenar datos del pago si están disponibles
+  useEffect(() => {
+    if (paymentData) {
+      setFormData(prev => ({
+        ...prev,
+        email: paymentData.email || "",
+        firstName: paymentData.firstName || "",
+        lastName: paymentData.lastName || ""
+      }));
+    }
+  }, [paymentData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,11 +68,13 @@ function Register() {
       newErrors.email = "El email no es válido";
     }
 
-    // Validar contraseña
+    // Validar contraseña con requisitos más estrictos
     if (!formData.password) {
       newErrors.password = "La contraseña es requerida";
     } else if (formData.password.length < 8) {
       newErrors.password = "La contraseña debe tener al menos 8 caracteres";
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.password)) {
+      newErrors.password = "La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial";
     }
 
     // Validar confirmación de contraseña
@@ -98,7 +113,13 @@ function Register() {
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
-        lastName: formData.lastName
+        lastName: formData.lastName,
+        // Agregar información de suscripción si está disponible
+        subscriptionInfo: subscriptionInfo ? {
+          planId: subscriptionInfo.planId,
+          planName: subscriptionInfo.planName,
+          fromPayment: true
+        } : null
       };
 
       const result = await register(userData);
@@ -108,9 +129,17 @@ function Register() {
         navigate("/");
       } else {
         // Manejar errores específicos del backend
-        if (result.error.includes("already exists")) {
+        if (result.error.includes("already exists") || result.error.includes("Registration failed")) {
           setErrors({ 
             email: "Este email ya está registrado" 
+          });
+        } else if (result.error.includes("Password") && result.error.includes("secure")) {
+          setErrors({ 
+            password: "La contraseña no cumple con los requisitos de seguridad" 
+          });
+        } else if (result.error.includes("Too many")) {
+          setErrors({ 
+            general: "Demasiados intentos de registro. Intenta más tarde." 
           });
         } else {
           setErrors({ 
@@ -142,9 +171,13 @@ function Register() {
           <p className="register-subtitle">Join our community today</p>
         )}
         
-        {selectedPlan && (
+        {subscriptionInfo && (
           <div className="plan-info">
-            <p>You're signing up for the <strong>{selectedPlan}</strong> plan</p>
+            <p>
+              🎉 ¡Activando tu plan <strong>{subscriptionInfo.planName}</strong>! 
+              <br />
+              <small>Completa tu registro para comenzar a disfrutar de todos los beneficios</small>
+            </p>
           </div>
         )}
         
@@ -233,6 +266,9 @@ function Register() {
               >
                 {showPassword ? "👁️" : "👁️‍🗨️"}
               </button>
+            </div>
+            <div className="password-help">
+              <small>La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y símbolos</small>
             </div>
             {errors.password && (
               <span className="error-message">{errors.password}</span>

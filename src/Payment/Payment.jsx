@@ -129,11 +129,22 @@ function Payment() {
       console.log('Processing payment for plan:', selectedPlan);
       console.log('Payment data:', paymentData);
       
-      // Redirigir a página de éxito
-      navigate('/payment-success', {
+      // Redirigir al registro con información de la suscripción
+      navigate('/register', {
         state: {
-          plan: selectedPlan,
-          email: paymentData.email
+          selectedPlan: selectedPlan,
+          paymentData: {
+            email: paymentData.email,
+            firstName: paymentData.firstName,
+            lastName: paymentData.lastName
+          },
+          subscriptionInfo: {
+            planId: selectedPlan.id,
+            planName: selectedPlan.name,
+            price: selectedPlan.price,
+            features: selectedPlan.features
+          },
+          message: `¡Pago exitoso! Complete su registro para activar su plan ${selectedPlan.name}`
         }
       });
       

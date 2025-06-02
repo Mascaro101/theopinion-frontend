@@ -99,6 +99,18 @@
   padding-right: 40px;
 }
 
+.password-help {
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.password-help small {
+  color: #666;
+  font-size: 11px;
+  line-height: 1.3;
+  display: block;
+}
+
 .password-toggle {
   position: absolute;
   right: 10px;

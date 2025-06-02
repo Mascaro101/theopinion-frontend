@@ -21,14 +21,27 @@ export const AuthProvider = ({ children }) => {
 
   // Verificar autenticación al cargar la aplicación
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
-        const isAuth = authService.isAuthenticated();
-        const currentUser = authService.getCurrentUser();
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
         
-        if (isAuth && currentUser) {
-          setUser(currentUser);
-          setIsAuthenticated(true);
+        if (token && storedUser) {
+          // Verificar que el token sigue siendo válido
+          try {
+            const response = await authService.getProfile();
+            const currentUser = response.data.user;
+            setUser(currentUser);
+            setIsAuthenticated(true);
+            // Actualizar datos del usuario en localStorage
+            localStorage.setItem('user', JSON.stringify(currentUser));
+          } catch (error) {
+            // Token inválido, limpiar localStorage
+            console.log('Token expired or invalid, clearing auth data:', error.message);
+            authService.logout();
+            setUser(null);
+            setIsAuthenticated(false);
+          }
         } else {
           setUser(null);
           setIsAuthenticated(false);
@@ -50,20 +63,37 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await authService.login(email, password);
-      const userData = response.data.user;
       
-      setUser(userData);
-      setIsAuthenticated(true);
-      
-      return { success: true, data: response };
+      if (response.success) {
+        const userData = response.data.user;
+        setUser(userData);
+        setIsAuthenticated(true);
+        return { success: true, data: response };
+      } else {
+        return { 
+          success: false, 
+          error: response.message || 'Error al iniciar sesión' 
+        };
+      }
     } catch (error) {
       console.error('Login error:', error);
       setUser(null);
       setIsAuthenticated(false);
       
+      // Manejar diferentes tipos de errores
+      let errorMessage = 'Error al iniciar sesión';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.code === 'NETWORK_ERROR') {
+        errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+      }
+      
       return { 
         success: false, 
-        error: error.message || 'Error al iniciar sesión' 
+        error: errorMessage
       };
     } finally {
       setLoading(false);
@@ -75,20 +105,37 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await authService.register(userData);
-      const newUser = response.data.user;
       
-      setUser(newUser);
-      setIsAuthenticated(true);
-      
-      return { success: true, data: response };
+      if (response.success) {
+        const newUser = response.data.user;
+        setUser(newUser);
+        setIsAuthenticated(true);
+        return { success: true, data: response };
+      } else {
+        return { 
+          success: false, 
+          error: response.message || 'Error al registrarse' 
+        };
+      }
     } catch (error) {
       console.error('Register error:', error);
       setUser(null);
       setIsAuthenticated(false);
       
+      // Manejar diferentes tipos de errores
+      let errorMessage = 'Error al registrarse';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.code === 'NETWORK_ERROR') {
+        errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+      }
+      
       return { 
         success: false, 
-        error: error.message || 'Error al registrarse' 
+        error: errorMessage
       };
     } finally {
       setLoading(false);
@@ -96,10 +143,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Función de logout
-  const logout = () => {
-    authService.logout();
-    setUser(null);
-    setIsAuthenticated(false);
+  const logout = async () => {
+    try {
+      // Intentar hacer logout en el backend
+      await authService.logout();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      // Siempre limpiar el estado local
+      authService.clearLocalAuth();
+      setUser(null);
+      setIsAuthenticated(false);
+    }
   };
 
   // Función para actualizar el perfil del usuario

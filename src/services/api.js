@@ -47,7 +47,7 @@ export const authService = {
   // Login
   login: async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/users/login', { email, password });
       
       if (response.data.success) {
         const { token, user } = response.data.data;
@@ -71,7 +71,7 @@ export const authService = {
   // Registro
   register: async (userData) => {
     try {
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post('/users/register', userData);
       
       if (response.data.success) {
         const { token, user } = response.data.data;
@@ -112,7 +112,7 @@ export const authService = {
   // Obtener perfil del usuario
   getProfile: async () => {
     try {
-      const response = await api.get('/auth/me');
+      const response = await api.get('/users/me');
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Error de conexión' };

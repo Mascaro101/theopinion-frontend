@@ -10,6 +10,8 @@ import Settings from "./Settings/Settings.jsx";
 import "./App.css";
 import axios from "axios";
 
+import SingleArticle from "./Article/SingleArticle.jsx";
+
 function App() {
   return (
     <AuthProvider>
@@ -24,6 +26,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/settings/:tab" element={<Settings />} />
             <Route path="/" element={<Home />} />
+            <Route path="/article/:id" element={<SingleArticle />} />
           </Routes>
         </div>
       </Router>

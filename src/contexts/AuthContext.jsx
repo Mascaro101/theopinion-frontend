@@ -37,7 +37,8 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(currentUser));
           } catch (error) {
             // Token inválido, limpiar localStorage
-            console.log('Token expired or invalid, clearing auth data:', error.message);
+            const errorMsg = error?.message || error?.response?.data?.message || JSON.stringify(error);
+            console.log('Token expired or invalid, clearing auth data:', errorMsg);
             authService.logout();
             setUser(null);
             setIsAuthenticated(false);

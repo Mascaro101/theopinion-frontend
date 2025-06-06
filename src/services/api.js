@@ -111,13 +111,16 @@ export const authService = {
 
   // Obtener perfil del usuario
   getProfile: async () => {
-    try {
-      const response = await api.get('/users/me');
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
-    }
-  },
+  try {
+    const user = localStorage.getItem('user');
+    const userId = user ? JSON.parse(user).id : null;
+    if (!userId) throw new Error('No user ID found');
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error de conexión' };
+  }
+},
 
   // Verificar si el usuario está autenticado
   isAuthenticated: () => {

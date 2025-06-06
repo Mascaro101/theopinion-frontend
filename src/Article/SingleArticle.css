@@ -1,0 +1,51 @@
+.single-article-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 2rem 2.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+.single-article-container h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.single-article-container p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 1.2rem;
+}
+
+.single-article-container .subtitle {
+  font-size: 1.3rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .single-article-container {
+    padding: 1rem;
+  }
+}
+
+.comments-section {
+  margin-top: 2rem;
+}
+.comments-section .comment {
+  margin-bottom: 0.5rem;
+}
+.comments-section textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+.comments-section button {
+  margin-top: 0.5rem;
+}
+.error {
+  color: red;
+}

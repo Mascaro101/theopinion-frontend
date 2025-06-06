@@ -34,7 +34,7 @@ function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <Link to="/" className="navbar-logo">Revista Online</Link>
+        <Link to="/" className="navbar-logo">The Opinion</Link>
         
         <div className="search-container">
           <input type="text" placeholder="Search articles..." className="search-input" />

@@ -64,6 +64,23 @@ if (loading) return <div>Loading...</div>;
       <p className="subtitle">Level of permission {article.permission}</p>
       <div>{article.contenido}</div>
 
+      {article.Imagenes?.length > 0 && (
+        <div className="article-images">
+          <h3>Images</h3>
+          {article.Imagenes.map((url, index) => (
+            <img
+              key={index}
+              src={url}
+              alt={`Article image ${index + 1}`}
+              className="article-img"
+              style={{ maxWidth: "100%", marginBottom: "1rem" }}
+            />
+          ))}
+        </div>
+      )}
+
+
+
       <div className="comments-section">
         <h3>Comments</h3>
         {article.comentarios?.length > 0 ? (

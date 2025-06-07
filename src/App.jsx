@@ -42,12 +42,12 @@ function Home() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        // You'll need to add your authentication token here
         const response = await axios.get("http://localhost:5000/api/articles", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log("Fetched articles:", response.data);
         setArticles(response.data);
       } catch (err) {
         setError(err.message);
@@ -72,12 +72,18 @@ function Home() {
         <button>Business</button>
         <button>Insights</button>
       </div>
-      
+
       {articles.length > 0 && (
         <>
-          {/* Featured Article - using the first article as featured */}
+          {/* ✅ Featured Article */}
           <div className="featured-article">
-            <div className="article-image placeholder-image"></div>
+            {articles[0].Imagenes?.[0] && (
+              <img
+                src={articles[0].Imagenes[0]}
+                alt={articles[0].titulo}
+                className="article-image"
+              />
+            )}
             <div className="article-content">
               <h2>{articles[0].titulo}</h2>
               <p className="article-date">
@@ -90,11 +96,11 @@ function Home() {
             </div>
           </div>
 
-          {/* Articles Grid */}
+          {/* ✅ Article Grid */}
           <div className="articles-grid">
             {articles.slice(1).map((article) => (
               <div className="article-card" key={article._id}>
-                {article.article_Special && (
+                {article.article_Special ? (
                   <div className="article-content subscription-required">
                     <p className="subscription-tag">Subscription Required</p>
                     <h3>{article.titulo}</h3>
@@ -105,10 +111,15 @@ function Home() {
                       Read More
                     </a>
                   </div>
-                )}
-                {!article.article_Special && (
+                ) : (
                   <>
-                    <div className="article-image"></div>
+                    {article.Imagenes?.[0] && (
+                      <img
+                        src={article.Imagenes[0]}
+                        alt={article.titulo}
+                        className="article-image"
+                      />
+                    )}
                     <h3>{article.titulo}</h3>
                     <p className="article-date">
                       {new Date(article.createdAt).toLocaleDateString()}
@@ -127,7 +138,7 @@ function Home() {
       <button className="load-more">Load More Articles</button>
 
       <footer className="site-footer">
-        {/* ... (keep your existing footer code) ... */}
+        {/* ...your existing footer content... */}
       </footer>
     </main>
   );

@@ -39,3 +39,11 @@
 .read-more:hover {
   text-decoration: underline;
 }
+
+.article-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}

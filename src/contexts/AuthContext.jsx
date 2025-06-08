@@ -1,178 +1,121 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/api';
 
-// Crear el contexto
 const AuthContext = createContext();
 
-// Hook personalizado para usar el contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };
 
-// Proveedor del contexto
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Verificar autenticación al cargar la aplicación
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-        
-        if (token && storedUser) {
-          // Verificar que el token sigue siendo válido
-          try {
-            const response = await authService.getProfile();
-            const currentUser = response.data.user;
-            setUser(currentUser);
-            setIsAuthenticated(true);
-            // Actualizar datos del usuario en localStorage
-            localStorage.setItem('user', JSON.stringify(currentUser));
-          } catch (error) {
-            // Token inválido, limpiar localStorage
-            const errorMsg = error?.message || error?.response?.data?.message || JSON.stringify(error);
-            console.log('Token expired or invalid, clearing auth data:', errorMsg);
-            authService.logout();
-            setUser(null);
-            setIsAuthenticated(false);
-          }
-        } else {
-          setUser(null);
-          setIsAuthenticated(false);
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+
+      if (token && storedUser) {
+        try {
+          const response = await authService.getProfile();
+          const currentUser = response.data.user;
+          setUser(currentUser);
+          setIsAuthenticated(true);
+          localStorage.setItem('user', JSON.stringify(currentUser));
+        } catch (error) {
+          console.error('getProfile failed:', error.response?.data || error.message);
+          clearLocalAuth();
         }
-      } catch (error) {
-        console.error('Error checking authentication:', error);
-        setUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
+      } else {
+        clearLocalAuth();
       }
+
+      setLoading(false);
     };
 
     checkAuth();
   }, []);
 
-  // Función de login
   const login = async (email, password) => {
     try {
       setLoading(true);
       const response = await authService.login(email, password);
-      
       if (response.success) {
         const userData = response.data.user;
+        const token = response.data.token;
+
         setUser(userData);
         setIsAuthenticated(true);
-        return { success: true, data: response };
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return { success: true };
       } else {
-        return { 
-          success: false, 
-          error: response.message || 'Error al iniciar sesión' 
-        };
+        return { success: false, error: response.message || "Error logging in" };
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setUser(null);
-      setIsAuthenticated(false);
-      
-      // Manejar diferentes tipos de errores
-      let errorMessage = 'Error al iniciar sesión';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.code === 'NETWORK_ERROR') {
-        errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
-      }
-      
-      return { 
-        success: false, 
-        error: errorMessage
-      };
+      console.error("Login error:", error);
+      return { success: false, error: error.message || "Unexpected error" };
     } finally {
       setLoading(false);
     }
   };
 
-  // Función de registro
   const register = async (userData) => {
     try {
       setLoading(true);
       const response = await authService.register(userData);
-      
       if (response.success) {
         const newUser = response.data.user;
+        const token = response.data.token;
+
         setUser(newUser);
         setIsAuthenticated(true);
-        return { success: true, data: response };
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(newUser));
+        return { success: true };
       } else {
-        return { 
-          success: false, 
-          error: response.message || 'Error al registrarse' 
-        };
+        return { success: false, error: response.message || 'Registration failed' };
       }
     } catch (error) {
       console.error('Register error:', error);
-      setUser(null);
-      setIsAuthenticated(false);
-      
-      // Manejar diferentes tipos de errores
-      let errorMessage = 'Error al registrarse';
-      
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.code === 'NETWORK_ERROR') {
-        errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
-      }
-      
-      return { 
-        success: false, 
-        error: errorMessage
-      };
+      return { success: false, error: error.message || 'Unexpected error' };
     } finally {
       setLoading(false);
     }
   };
 
-  // Función de logout
   const logout = async () => {
     try {
-      // Intentar hacer logout en el backend
       await authService.logout();
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Logout error:", error);
     } finally {
-      // Siempre limpiar el estado local
-      authService.clearLocalAuth();
-      setUser(null);
-      setIsAuthenticated(false);
+      clearLocalAuth();
     }
   };
 
-  // Función para actualizar el perfil del usuario
+  const clearLocalAuth = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
   const updateUser = (updatedUser) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
-  // Función para refrescar los datos del usuario
   const refreshUser = async () => {
     try {
       const response = await authService.getProfile();
       const userData = response.data.user;
-      
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
-      
       return { success: true, data: userData };
     } catch (error) {
       console.error('Error refreshing user:', error);
@@ -180,53 +123,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Verificar si el usuario tiene acceso premium
   const hasPremiumAccess = () => {
     if (!user || !user.subscription) return false;
-    
     const { type, isActive, endDate } = user.subscription;
-    
-    if (type === 'free') return false;
-    if (!isActive) return false;
-    if (endDate && new Date(endDate) < new Date()) return false;
-    
-    return true;
+    return type !== 'free' && isActive && (!endDate || new Date(endDate) > new Date());
   };
 
-  // Verificar si el usuario tiene un rol específico
-  const hasRole = (role) => {
-    return user?.role === role;
-  };
+  const hasRole = (role) => user?.role === role;
 
-  // Verificar si el usuario tiene uno de varios roles
-  const hasAnyRole = (roles) => {
-    return roles.includes(user?.role);
-  };
-
-  const value = {
-    // Estado
-    user,
-    loading,
-    isAuthenticated,
-    
-    // Funciones de autenticación
-    login,
-    register,
-    logout,
-    
-    // Funciones de usuario
-    updateUser,
-    refreshUser,
-    
-    // Funciones de permisos
-    hasPremiumAccess,
-    hasRole,
-    hasAnyRole,
-  };
+  const hasAnyRole = (roles) => roles.includes(user?.role);
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated,
+        login,
+        register,
+        logout,
+        updateUser,
+        refreshUser,
+        hasPremiumAccess,
+        hasRole,
+        hasAnyRole,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

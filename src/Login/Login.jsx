@@ -188,7 +188,7 @@ function Login() {
         </form>
         
         <div className="login-footer">
-          <p>Don't have an account? <a href="#" className="signup-link">Sign up</a></p>
+          <p>Don't have an account? <a href="/register" className="signup-link">Sign up</a></p>
         </div>
       </div>
     </div>

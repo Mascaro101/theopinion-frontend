@@ -8,11 +8,40 @@ function NavBar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+  try {
+    await logout();
     setShowUserMenu(false);
-    navigate("/");
-  };
+
+    // Verificación técnica
+    const token = localStorage.getItem("token");
+    const userStored = localStorage.getItem("user");
+
+    if (!token && !userStored) {
+      console.log("✅ Logout verificado: localStorage limpio.");
+    } else {
+      console.warn("⚠️ Logout incompleto: localStorage aún tiene datos.");
+    }
+
+    // Emitir evento global
+    const logoutEvent = new CustomEvent("userLoggedOut");
+    window.dispatchEvent(logoutEvent);
+    console.log("📢 Evento 'userLoggedOut' emitido globalmente.");
+
+    // Redirección a la página de inicio
+    navigate("/", { replace: true });
+
+    setTimeout(() => {
+      if (window.location.pathname === "/") {
+        console.log("✅ Redirección exitosa a / tras logout.");
+      } else {
+        console.error("❌ Fallo en redirección tras logout.");
+      }
+    }, 200);
+  } catch (error) {
+    console.error("❌ Error durante logout:", error);
+  }
+};
 
   const toggleUserMenu = () => {
     setShowUserMenu(!showUserMenu);
@@ -20,10 +49,9 @@ function NavBar() {
 
   const getSubscriptionBadge = () => {
     if (!user?.subscription) return null;
-    
     const { type } = user.subscription;
-    if (type === 'free') return null;
-    
+    if (type === "free") return null;
+
     return (
       <span className={`subscription-badge ${type}`}>
         {type.toUpperCase()}
@@ -35,11 +63,15 @@ function NavBar() {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">The Opinion</Link>
-        
+
         <div className="search-container">
-          <input type="text" placeholder="Search articles..." className="search-input" />
+          <input
+            type="text"
+            placeholder="Search articles..."
+            className="search-input"
+          />
         </div>
-        
+
         <div className="navbar-buttons">
           {isAuthenticated ? (
             <div className="user-section">
@@ -61,7 +93,7 @@ function NavBar() {
                 </div>
                 <span className="dropdown-arrow">▼</span>
               </div>
-              
+
               {showUserMenu && (
                 <div className="user-menu">
                   <div className="user-menu-header">
@@ -69,22 +101,18 @@ function NavBar() {
                     <p className="user-role">{user?.role}</p>
                   </div>
                   <div className="user-menu-divider"></div>
-                  <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    Mi Perfil
-                  </Link>
-                  <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    Configuración
-                  </Link>
-                  {user?.role === 'admin' && (
-                    <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                      Panel Admin
-                    </Link>
+
+                  <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Mi Perfil</Link>
+                  <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Configuración</Link>
+
+                  {user?.role === "admin" && (
+                    <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Panel Admin</Link>
                   )}
-                  {(user?.role === 'author' || user?.role === 'editor' || user?.role === 'admin') && (
-                    <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                      Dashboard
-                    </Link>
+
+                  {["author", "editor", "admin"].includes(user?.role) && (
+                    <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Dashboard</Link>
                   )}
+
                   <div className="user-menu-divider"></div>
                   <button className="user-menu-item logout-item" onClick={handleLogout}>
                     Cerrar Sesión
@@ -100,8 +128,7 @@ function NavBar() {
           )}
         </div>
       </div>
-      
-      {/* Overlay para cerrar el menú al hacer clic fuera */}
+
       {showUserMenu && (
         <div className="menu-overlay" onClick={() => setShowUserMenu(false)}></div>
       )}

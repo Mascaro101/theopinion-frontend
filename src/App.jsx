@@ -14,8 +14,8 @@ import SingleArticle from "./Article/SingleArticle.jsx";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="App">
           <NavBar />
           <Routes>
@@ -29,8 +29,8 @@ function App() {
             <Route path="/article/:id" element={<SingleArticle />} />
           </Routes>
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

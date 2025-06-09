@@ -15,6 +15,7 @@ function SingleArticle() {
     const fetchArticle = async () => {
       try {
         const token = localStorage.getItem("token");
+        console.log("1", token)
         const response = await axios.get(
           `http://localhost:5000/api/articles/${id}`,
           {
@@ -23,7 +24,10 @@ function SingleArticle() {
             },
           }
         );
+        console.log("2", token)
+        console.log("Article fetched:", response.data);
         setArticle(response.data);
+        console.log("3", token)
       } catch (err) {
         setError("Error fetching article");
       } finally {

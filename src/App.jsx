@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import NavBar from "./NavBar/NavBar.jsx";
 import Login from "./Login/Login.jsx";
@@ -90,9 +90,9 @@ function Home() {
                 {new Date(articles[0].createdAt).toLocaleDateString()}
               </p>
               <p>{articles[0].segundo_titulo}</p>
-              <a className="read-more" href={`/article/${articles[0]._id}`}>
+              <Link className="read-more" to={`/article/${articles[0]._id}`}>
                 Read More
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -107,9 +107,9 @@ function Home() {
                     <p className="article-date">
                       {new Date(article.createdAt).toLocaleDateString()}
                     </p>
-                    <a className="read-more" href={`/article/${article._id}`}>
+                    <Link className="read-more" to={`/article/${article._id}`}>
                       Read More
-                    </a>
+                    </Link>
                   </div>
                 ) : (
                   <>
@@ -124,9 +124,9 @@ function Home() {
                     <p className="article-date">
                       {new Date(article.createdAt).toLocaleDateString()}
                     </p>
-                    <a className="read-more" href={`/article/${article._id}`}>
+                    <Link className="read-more" to={`/article/${article._id}`}>
                       Read More
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>

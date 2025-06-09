@@ -4,9 +4,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import NavBar from "./NavBar/NavBar.jsx";
 import Login from "./Login/Login.jsx";
 import Register from "./Register/Register.jsx";
-import Subscription from "./Subscription/Subscription.jsx";
-import Payment from "./Payment/Payment.jsx";
-import Settings from "./Settings/Settings.jsx";
 import SingleArticle from "./Article/SingleArticle.jsx";
 import "./App.css";
 import axios from "axios";
@@ -20,10 +17,6 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/subscription" element={<Subscription />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/settings/:tab" element={<Settings />} />
             <Route path="/" element={<Home />} />
             <Route path="/article/:id" element={<SingleArticle />} />
           </Routes>
@@ -82,15 +75,7 @@ function Home() {
 
   return (
     <main className="main-content">
-      <div className="categories">
-        <button>Technology</button>
-        <button>Science</button>
-        <button>Culture</button>
-        <button>Opinion</button>
-        <button>Business</button>
-        <button>Insights</button>
-      </div>
-
+      
       {articles.length > 0 && (
         <>
           <div className="featured-article">

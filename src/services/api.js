@@ -114,18 +114,6 @@ export const authService = {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   },
-
-  changePassword: async (currentPassword, newPassword) => {
-    try {
-      const response = await api.post('/auth/change-password', {
-        currentPassword,
-        newPassword,
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
-    }
-  },
 };
 
 // Servicios de artículos
@@ -142,29 +130,6 @@ export const articleService = {
   getArticleById: async (id) => {
     try {
       const response = await api.get(`/articles/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
-    }
-  },
-
-  searchArticles: async (query, filters = {}) => {
-    try {
-      const response = await api.get('/articles/search', {
-        params: { q: query, ...filters },
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
-    }
-  },
-};
-
-// Servicios de categorías
-export const categoryService = {
-  getCategories: async () => {
-    try {
-      const response = await api.get('/categories');
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Error de conexión' };

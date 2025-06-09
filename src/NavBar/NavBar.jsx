@@ -1,32 +1,97 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./NavBar.css";
 
 function NavBar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { user, isAuthenticated, logout, loading } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const inactivityTimer = useRef(null);
 
-  const handleLogout = () => {
-    logout();
-    setShowUserMenu(false);
-    navigate("/");
+  // Function to reset the inactivity timer
+  const resetInactivityTimer = () => {
+    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+    inactivityTimer.current = setTimeout(() => {
+      if (isAuthenticated) {
+        handleLogout();
+        alert("You have been logged out due to inactivity.");
+      }
+    }, 1000); // 30 seconds
   };
 
-  const toggleUserMenu = () => setShowUserMenu(!showUserMenu);
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // List of events that indicate user activity
+    const events = ["mousemove", "keydown", "mousedown", "touchstart"];
+    events.forEach(event =>
+      window.addEventListener(event, resetInactivityTimer)
+    );
+
+    // Start the timer when component mounts or user logs in
+    resetInactivityTimer();
+
+    // Cleanup
+    return () => {
+      events.forEach(event =>
+        window.removeEventListener(event, resetInactivityTimer)
+      );
+      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+    };
+    // eslint-disable-next-line
+  }, [isAuthenticated]);
+
+  const handleLogout = async () => {
+  try {
+    await logout();
+    setShowUserMenu(false);
+
+    // Verificación técnica
+    const token = localStorage.getItem("token");
+    const userStored = localStorage.getItem("user");
+
+    if (!token && !userStored) {
+      console.log("✅ Logout verificado: localStorage limpio.");
+    } else {
+      console.warn("⚠️ Logout incompleto: localStorage aún tiene datos.");
+    }
+
+    // Emitir evento global
+    const logoutEvent = new CustomEvent("userLoggedOut");
+    window.dispatchEvent(logoutEvent);
+    console.log("📢 Evento 'userLoggedOut' emitido globalmente.");
+
+    // Redirección a la página de inicio
+    navigate("/", { replace: true });
+
+    setTimeout(() => {
+      if (window.location.pathname === "/") {
+        console.log("✅ Redirección exitosa a / tras logout.");
+      } else {
+        console.error("❌ Fallo en redirección tras logout.");
+      }
+    }, 200);
+  } catch (error) {
+    console.error("❌ Error durante logout:", error);
+  }
+};
+
+  const toggleUserMenu = () => {
+    setShowUserMenu(!showUserMenu);
+  };
 
   const getSubscriptionBadge = () => {
     if (!user?.subscription) return null;
     const { type } = user.subscription;
-    return type !== 'free' ? (
+    if (type === "free") return null;
+
+    return (
       <span className={`subscription-badge ${type}`}>
         {type.toUpperCase()}
       </span>
-    ) : null;
+    );
   };
-
-  if (loading) return null; // or show a spinner
 
   return (
     <nav className="navbar">
@@ -34,7 +99,11 @@ function NavBar() {
         <Link to="/" className="navbar-logo">The Opinion</Link>
 
         <div className="search-container">
-          <input type="text" placeholder="Search articles..." className="search-input" />
+          <input
+            type="text"
+            placeholder="Search articles..."
+            className="search-input"
+          />
         </div>
 
         <div className="navbar-buttons">
@@ -46,8 +115,7 @@ function NavBar() {
                     <img src={user.profile.avatar} alt="Avatar" />
                   ) : (
                     <span className="avatar-initials">
-                      {user?.firstName?.[0]}
-                      {user?.lastName?.[0]}
+                      {user?.firstName?.[0]}{user?.lastName?.[0]}
                     </span>
                   )}
                 </div>
@@ -67,22 +135,18 @@ function NavBar() {
                     <p className="user-role">{user?.role}</p>
                   </div>
                   <div className="user-menu-divider"></div>
-                  <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    Mi Perfil
-                  </Link>
-                  <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    Configuración
-                  </Link>
+
+                  <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Mi Perfil</Link>
+                  <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Configuración</Link>
+
                   {user?.role === "admin" && (
-                    <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                      Panel Admin
-                    </Link>
+                    <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Panel Admin</Link>
                   )}
+
                   {["author", "editor", "admin"].includes(user?.role) && (
-                    <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                      Dashboard
-                    </Link>
+                    <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Dashboard</Link>
                   )}
+
                   <div className="user-menu-divider"></div>
                   <button className="user-menu-item logout-item" onClick={handleLogout}>
                     Cerrar Sesión

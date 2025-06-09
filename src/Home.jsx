@@ -6,9 +6,9 @@ const Home = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [unauthorized, setUnauthorized] = useState(false);
 
   useEffect(() => {
-    console.log("Fetching articles..."); // Debug log
     const fetchArticles = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -19,15 +19,18 @@ const Home = () => {
           },
         });
 
+        if (response.status === 401) {
+          setUnauthorized(true);
+          return; // ⛔ do not throw an error for 401
+        }
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log("API Response:", data); // Debug API data
         setArticles(data);
       } catch (err) {
-        console.error("Fetch Error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -37,26 +40,27 @@ const Home = () => {
     fetchArticles();
   }, []);
 
-  // Function to handle image URLs
   const getImageUrl = (imgPath) => {
     if (!imgPath) return null;
-    
-    // If it's already a full URL
-    if (imgPath.startsWith('http')) return imgPath;
-    
-    // If it's a local path
-    return `http://localhost:5000${imgPath}`;
+    return imgPath.startsWith("http") ? imgPath : `http://localhost:5000${imgPath}`;
   };
 
-  if (loading) return <div className="loading">Loading articles...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (loading) return <div className="main-content">Loading articles...</div>;
+
+  if (unauthorized)
+    return (
+      <div className="main-content unauthorized-message">
+        <b>Content Cannot Be Accessed Without an Account</b>
+      </div>
+    );
+
+  if (error) return <div className="main-content error-message">Error: {error}</div>;
 
   return (
     <main className="main-content">
       <div className="articles-grid">
         {articles.map((article) => {
           const imageUrl = getImageUrl(article.Imagenes?.[0]);
-          console.log(`Article ID: ${article._id}, Image URL: ${imageUrl}`); // Debug each image
 
           return (
             <div key={article._id} className="article-card">
@@ -67,7 +71,6 @@ const Home = () => {
                     alt={article.titulo}
                     className="article-image"
                     onError={(e) => {
-                      console.error("Image failed to load:", imageUrl);
                       e.target.style.display = "none";
                       e.target.parentElement.style.display = "none";
                     }}
@@ -78,7 +81,8 @@ const Home = () => {
                 <h3>{article.titulo}</h3>
                 <p className="article-subtitle">{article.segundo_titulo}</p>
                 <p className="article-meta">
-                  {new Date(article.createdAt).toLocaleDateString()} • {article.categoria}
+                  {new Date(article.createdAt).toLocaleDateString()} •{" "}
+                  {article.categoria}
                 </p>
                 <Link to={`/article/${article._id}`} className="read-more">
                   Read More →

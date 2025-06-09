@@ -7,10 +7,9 @@ import Register from "./Register/Register.jsx";
 import Subscription from "./Subscription/Subscription.jsx";
 import Payment from "./Payment/Payment.jsx";
 import Settings from "./Settings/Settings.jsx";
+import SingleArticle from "./Article/SingleArticle.jsx";
 import "./App.css";
 import axios from "axios";
-
-import SingleArticle from "./Article/SingleArticle.jsx";
 
 function App() {
   return (
@@ -38,6 +37,7 @@ function Home() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [unauthorized, setUnauthorized] = useState(false);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -47,10 +47,13 @@ function Home() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Fetched articles:", response.data);
         setArticles(response.data);
       } catch (err) {
-        setError(err.message);
+        if (err.response && err.response.status === 401) {
+          setUnauthorized(true);
+        } else {
+          setError(err.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -60,7 +63,22 @@ function Home() {
   }, []);
 
   if (loading) return <div className="main-content">Loading articles...</div>;
-  if (error) return <div className="main-content">Error: {error}</div>;
+
+  if (unauthorized) {
+    return (
+      <div className="main-content unauthorized-message">
+        <b>Content Cannot Be Accessed Without an Account</b>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="main-content error-message">
+        <b>Error: {error}</b>
+      </div>
+    );
+  }
 
   return (
     <main className="main-content">
@@ -75,7 +93,6 @@ function Home() {
 
       {articles.length > 0 && (
         <>
-          {/* ✅ Featured Article */}
           <div className="featured-article">
             {articles[0].Imagenes?.[0] && (
               <img
@@ -96,7 +113,6 @@ function Home() {
             </div>
           </div>
 
-          {/* ✅ Article Grid */}
           <div className="articles-grid">
             {articles.slice(1).map((article) => (
               <div className="article-card" key={article._id}>
@@ -138,7 +154,7 @@ function Home() {
       <button className="load-more">Load More Articles</button>
 
       <footer className="site-footer">
-        {/* ...your existing footer content... */}
+        {/* Your footer content */}
       </footer>
     </main>
   );

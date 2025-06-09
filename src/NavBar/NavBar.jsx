@@ -17,7 +17,7 @@ function NavBar() {
         handleLogout();
         alert("You have been logged out due to inactivity.");
       }
-    }, 1000); // 30 seconds
+    }, 30000); // 30 seconds
   };
 
   useEffect(() => {

@@ -12,7 +12,7 @@ const Home = () => {
     const fetchArticles = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/articles", {
+        const response = await fetch("https://theopinion-backend-1.onrender.com/api/articles", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -45,7 +45,7 @@ const Home = () => {
     if (imgPath.startsWith('http')) return imgPath;
     
     // If it's a local path
-    return `http://localhost:5000${imgPath}`;
+    return `https://theopinion-backend-1.onrender.com${imgPath}`;
   };
 
   if (loading) return <div className="loading">Loading articles...</div>;

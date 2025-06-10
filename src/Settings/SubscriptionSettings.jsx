@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import './SubscriptionSettings.css';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://theopinion-backend-1.onrender.com/api';
 
 // Create axios instance with authentication
 const createAuthAxios = () => {

@@ -42,7 +42,7 @@ function Home() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/articles", {
+        const response = await axios.get("https://theopinion-backend-1.onrender.com/api/articles", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

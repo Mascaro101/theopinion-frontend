@@ -26,7 +26,7 @@ function SingleArticle() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5000/api/articles/${id}`,
+          `https://theopinion-backend-1.onrender.com/api/articles/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ function SingleArticle() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/articles/${id}/comment`,
+        `https://theopinion-backend-1.onrender.com/api/articles/${id}/comment`,
         { commentText: newComment, user: "Anonymous" },
         {
           headers: {

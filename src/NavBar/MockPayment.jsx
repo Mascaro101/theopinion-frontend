@@ -34,9 +34,9 @@ function MockPayment() {
 
   return (
     <div className="mock-payment-container">
-      <h2>Mock Payment</h2>
+      <h2>Pago</h2>
       <form className="mock-payment-form" onSubmit={handleFakeSubmit}>
-        <label>Card Number:</label>
+        <label>Numero de Tarjeta:</label>
         <input
           type="text"
           value={cardNumber}
@@ -44,7 +44,7 @@ function MockPayment() {
           required
         />
 
-        <label>Cardholder Name:</label>
+        <label>Nombre:</label>
         <input
           type="text"
           value={cardName}
@@ -52,7 +52,7 @@ function MockPayment() {
           required
         />
 
-        <button type="submit">Pay and Upgrade</button>
+        <button type="submit">Pagar y Suscribirte</button>
       </form>
     </div>
   );

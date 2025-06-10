@@ -115,8 +115,8 @@ function NavBar() {
                     <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Dashboard</Link>
                   )}
                   <button className="subscribe" onClick={handlePermissionUpgrade}>
-                    Subscribirte
-                  </button>
+                    Suscribirte
+                  </button> 
                   <div className="user-menu-divider"></div>
                   <button className="user-menu-item logout-item" onClick={handleLogout}>
                     Cerrar Sesión

@@ -114,8 +114,8 @@ function NavBar() {
                   ].includes(user?.role) && (
                     <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Dashboard</Link>
                   )}
-                  <button className="user-menu-item" onClick={handlePermissionUpgrade}>
-                    Upgrade Permission
+                  <button className="subscribe" onClick={handlePermissionUpgrade}>
+                    Subscribirte
                   </button>
                   <div className="user-menu-divider"></div>
                   <button className="user-menu-item logout-item" onClick={handleLogout}>

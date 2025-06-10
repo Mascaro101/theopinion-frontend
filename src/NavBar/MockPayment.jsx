@@ -14,7 +14,7 @@ function MockPayment() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        "https://theopinion-backend-1.onrender.com/changePermission",
+        "https://theopinion-backend-1.onrender.com/users/changePermission",
         { permission: 1 },
         {
           headers: {

@@ -8,6 +8,7 @@ import Subscription from "./Subscription/Subscription.jsx";
 import Payment from "./Payment/Payment.jsx";
 import Settings from "./Settings/Settings.jsx";
 import SingleArticle from "./Article/SingleArticle.jsx";
+import MockPayment from "./NavBar/MockPayment.jsx";
 import "./App.css";
 import axios from "axios";
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/settings/:tab" element={<Settings />} />
             <Route path="/" element={<Home />} />
             <Route path="/article/:id" element={<SingleArticle />} />
+            <Route path="/mock-payment" element={<MockPayment />} />
           </Routes>
         </div>
       </Router>

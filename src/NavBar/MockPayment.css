@@ -1,0 +1,48 @@
+.mock-payment-container {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.mock-payment-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.mock-payment-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.mock-payment-form label {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.mock-payment-form input {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.mock-payment-form button {
+  margin-top: 2rem;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.mock-payment-form button:hover {
+  background-color: #0056b3;
+}

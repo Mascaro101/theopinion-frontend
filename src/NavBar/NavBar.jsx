@@ -1,6 +1,8 @@
+// NavBar.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 import "./NavBar.css";
 
 function NavBar() {
@@ -9,7 +11,6 @@ function NavBar() {
   const navigate = useNavigate();
   const inactivityTimer = useRef(null);
 
-  // Function to reset the inactivity timer
   const resetInactivityTimer = () => {
     if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
     inactivityTimer.current = setTimeout(() => {
@@ -17,65 +18,36 @@ function NavBar() {
         handleLogout();
         alert("You have been logged out due to inactivity.");
       }
-    }, 30000); // 30 seconds
+    }, 30000);
   };
 
   useEffect(() => {
     if (!isAuthenticated) return;
-
-    // List of events that indicate user activity
     const events = ["mousemove", "keydown", "mousedown", "touchstart"];
-    events.forEach(event =>
-      window.addEventListener(event, resetInactivityTimer)
-    );
-
-    // Start the timer when component mounts or user logs in
+    events.forEach(event => window.addEventListener(event, resetInactivityTimer));
     resetInactivityTimer();
-
-    // Cleanup
     return () => {
-      events.forEach(event =>
-        window.removeEventListener(event, resetInactivityTimer)
-      );
+      events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
     };
-    // eslint-disable-next-line
   }, [isAuthenticated]);
 
   const handleLogout = async () => {
-  try {
-    await logout();
-    setShowUserMenu(false);
-
-    // Verificación técnica
-    const token = localStorage.getItem("token");
-    const userStored = localStorage.getItem("user");
-
-    if (!token && !userStored) {
-      console.log("✅ Logout verificado: localStorage limpio.");
-    } else {
-      console.warn("⚠️ Logout incompleto: localStorage aún tiene datos.");
+    try {
+      await logout();
+      setShowUserMenu(false);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.dispatchEvent(new CustomEvent("userLoggedOut"));
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
     }
+  };
 
-    // Emitir evento global
-    const logoutEvent = new CustomEvent("userLoggedOut");
-    window.dispatchEvent(logoutEvent);
-    console.log("📢 Evento 'userLoggedOut' emitido globalmente.");
-
-    // Redirección a la página de inicio
-    navigate("/", { replace: true });
-
-    setTimeout(() => {
-      if (window.location.pathname === "/") {
-        console.log("✅ Redirección exitosa a / tras logout.");
-      } else {
-        console.error("❌ Fallo en redirección tras logout.");
-      }
-    }, 200);
-  } catch (error) {
-    console.error("❌ Error durante logout:", error);
-  }
-};
+  const handlePermissionUpgrade = () => {
+    navigate("/mock-payment");
+  };
 
   const toggleUserMenu = () => {
     setShowUserMenu(!showUserMenu);
@@ -85,27 +57,16 @@ function NavBar() {
     if (!user?.subscription) return null;
     const { type } = user.subscription;
     if (type === "free") return null;
-
-    return (
-      <span className={`subscription-badge ${type}`}>
-        {type.toUpperCase()}
-      </span>
-    );
+    return <span className={`subscription-badge ${type}`}>{type.toUpperCase()}</span>;
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">The Opinion</Link>
-
         <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search articles..."
-            className="search-input"
-          />
+          <input type="text" placeholder="Search articles..." className="search-input" />
         </div>
-
         <div className="navbar-buttons">
           {isAuthenticated ? (
             <div className="user-section">
@@ -120,9 +81,7 @@ function NavBar() {
                   )}
                 </div>
                 <div className="user-details">
-                  <span className="user-name">
-                    {user?.firstName} {user?.lastName}
-                  </span>
+                  <span className="user-name">{user?.firstName} {user?.lastName}</span>
                   {getSubscriptionBadge()}
                 </div>
                 <span className="dropdown-arrow">▼</span>
@@ -135,18 +94,21 @@ function NavBar() {
                     <p className="user-role">{user?.role}</p>
                   </div>
                   <div className="user-menu-divider"></div>
-
                   <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Mi Perfil</Link>
                   <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Configuración</Link>
-
                   {user?.role === "admin" && (
                     <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Panel Admin</Link>
                   )}
-
-                  {["author", "editor", "admin"].includes(user?.role) && (
+                  {[
+                    "author",
+                    "editor",
+                    "admin"
+                  ].includes(user?.role) && (
                     <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Dashboard</Link>
                   )}
-
+                  <button className="user-menu-item" onClick={handlePermissionUpgrade}>
+                    Upgrade Permission
+                  </button>
                   <div className="user-menu-divider"></div>
                   <button className="user-menu-item logout-item" onClick={handleLogout}>
                     Cerrar Sesión
@@ -162,7 +124,6 @@ function NavBar() {
           )}
         </div>
       </div>
-
       {showUserMenu && (
         <div className="menu-overlay" onClick={() => setShowUserMenu(false)}></div>
       )}

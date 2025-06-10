@@ -64,9 +64,15 @@ function NavBar() {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">The Opinion</Link>
+
         <div className="search-container">
-          <input type="text" placeholder="Search articles..." className="search-input" />
+          <input
+            type="text"
+            placeholder="Search articles..."
+            className="search-input"
+          />
         </div>
+
         <div className="navbar-buttons">
           {isAuthenticated ? (
             <div className="user-section">
@@ -94,8 +100,10 @@ function NavBar() {
                     <p className="user-role">{user?.role}</p>
                   </div>
                   <div className="user-menu-divider"></div>
+
                   <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Mi Perfil</Link>
                   <Link to="/settings/subscription" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Configuración</Link>
+
                   {user?.role === "admin" && (
                     <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Panel Admin</Link>
                   )}
@@ -119,7 +127,6 @@ function NavBar() {
           ) : (
             <>
               <Link to="/login" className="login-button">Log in</Link>
-              <Link to="/subscription" className="subscribe-button">Subscribe</Link>
             </>
           )}
         </div>

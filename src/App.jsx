@@ -12,8 +12,8 @@ import { jwtDecode } from "jwt-decode";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="App">
           <NavBar />
           <Routes>
@@ -24,8 +24,8 @@ function App() {
             <Route path="/mock-payment" element={<MockPayment />} />
           </Routes>
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
@@ -52,7 +52,7 @@ function Home() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/articles", {
+        const response = await axios.get("https://theopinion-backend-1.onrender.com/api/articles", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

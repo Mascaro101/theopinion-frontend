@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext"; // 👈 Importa tu contexto
 import axios from "axios";
-import "./SingleArticle.css"; // <-- import the CSS file
+import "./SingleArticle.css";
 
 function SingleArticle() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, loading: authLoading } = useAuth(); // 👈 Usa auth
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,12 +15,19 @@ function SingleArticle() {
   const [commentError, setCommentError] = useState(null);
 
   useEffect(() => {
+    if (authLoading) return; // Espera a que termine AuthContext
+
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     const fetchArticle = async () => {
       try {
         const token = localStorage.getItem("token");
         console.log("1", token)
         const response = await axios.get(
-          `http://localhost:5000/api/articles/${id}`,
+          `https://theopinion-backend-1.onrender.com/api/articles/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -34,16 +44,17 @@ function SingleArticle() {
         setLoading(false);
       }
     };
+
     fetchArticle();
-  }, [id]);
+  }, [id, isAuthenticated, authLoading, navigate]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    console.log("Calling comment API with ID:", id);
+
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/articles/${id}/comment`,
+        `https://theopinion-backend-1.onrender.com/api/articles/${id}/comment`,
         { commentText: newComment, user: "Anonymous" },
         {
           headers: {
@@ -58,7 +69,8 @@ function SingleArticle() {
       setCommentError("Failed to post comment.");
     }
   };
-if (loading) return <div>Loading...</div>;
+
+  if (authLoading || loading) return <div>Loading...</div>;
   if (error || !article) return <div>{error || "Article not found"}</div>;
 
   return (
@@ -82,8 +94,6 @@ if (loading) return <div>Loading...</div>;
           ))}
         </div>
       )}
-
-
 
       <div className="comments-section">
         <h3>Comments</h3>

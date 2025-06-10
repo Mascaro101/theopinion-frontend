@@ -12,7 +12,7 @@ const Home = () => {
     const fetchArticles = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/articles", {
+        const response = await fetch("https://theopinion-backend-1.onrender.com/api/articles", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -42,7 +42,16 @@ const Home = () => {
 
   const getImageUrl = (imgPath) => {
     if (!imgPath) return null;
+<<<<<<< HEAD
     return imgPath.startsWith("http") ? imgPath : `http://localhost:5000${imgPath}`;
+=======
+    
+    // If it's already a full URL
+    if (imgPath.startsWith('http')) return imgPath;
+    
+    // If it's a local path
+    return `https://theopinion-backend-1.onrender.com${imgPath}`;
+>>>>>>> 55a65d1888d462874d7326a2a15035e30f1b00f9
   };
 
   if (loading) return <div className="main-content">Loading articles...</div>;

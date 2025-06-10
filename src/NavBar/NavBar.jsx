@@ -57,7 +57,16 @@ function NavBar() {
     if (!user?.subscription) return null;
     const { type } = user.subscription;
     if (type === "free") return null;
+<<<<<<< HEAD
     return <span className={`subscription-badge ${type}`}>{type.toUpperCase()}</span>;
+=======
+
+    return (
+      <span className={`subscription-badge ${type}`}>
+        {type.toUpperCase()}
+      </span>
+    );
+>>>>>>> 55a65d1888d462874d7326a2a15035e30f1b00f9
   };
 
   return (
@@ -107,6 +116,7 @@ function NavBar() {
                   {user?.role === "admin" && (
                     <Link to="/admin" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Panel Admin</Link>
                   )}
+<<<<<<< HEAD
                   {[
                     "author",
                     "editor",
@@ -117,6 +127,13 @@ function NavBar() {
                   <button className="user-menu-item" onClick={handlePermissionUpgrade}>
                     Upgrade Permission
                   </button>
+=======
+
+                  {["author", "editor", "admin"].includes(user?.role) && (
+                    <Link to="/dashboard" className="user-menu-item" onClick={() => setShowUserMenu(false)}>Dashboard</Link>
+                  )}
+
+>>>>>>> 55a65d1888d462874d7326a2a15035e30f1b00f9
                   <div className="user-menu-divider"></div>
                   <button className="user-menu-item logout-item" onClick={handleLogout}>
                     Cerrar Sesión
@@ -131,6 +148,10 @@ function NavBar() {
           )}
         </div>
       </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 55a65d1888d462874d7326a2a15035e30f1b00f9
       {showUserMenu && (
         <div className="menu-overlay" onClick={() => setShowUserMenu(false)}></div>
       )}

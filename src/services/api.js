@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Configuración base de la API
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://theopinion-backend-1.onrender.com/api';
 
-// Crear instancia de axios
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -12,7 +10,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Interceptor para agregar el token a las peticiones
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -24,7 +21,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor para manejar respuestas y errores
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -45,7 +41,6 @@ api.interceptors.response.use(
   }
 );
 
-// Servicios de autenticación
 export const authService = {
   login: async (email, password) => {
     try {
@@ -116,24 +111,15 @@ export const authService = {
   },
 };
 
-// Servicios de artículos
 export const articleService = {
   getArticles: async (params = {}) => {
-    try {
-      const response = await api.get('/articles', { params });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
-    }
+    const response = await api.get('/articles', { params });
+    return response.data;
   },
 
   getArticleById: async (id) => {
-    try {
-      const response = await api.get(`/articles/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Error de conexión' };
-    }
+    const response = await api.get(`/articles/${id}`);
+    return response.data;
   },
 };
 
